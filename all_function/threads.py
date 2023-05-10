@@ -18,7 +18,6 @@ def linux_threads_pool(file_name,cmd):
         pool = ThreadPoolExecutor(max_workers=pool_num)
         for i in read_file(file_name):  # 获取资产内容，并进行采集
             if check_in_date(i):
-                print(i)
                 # pool.submit(lambda cxp:run(*cxp),(i ,cmd))
                 linux_con = run_linux(i)
                 if linux_con.con_state == True:  # 判断是否成功建立连接，若失败返回信息
