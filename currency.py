@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-@Time ： 2023/4/28 15:31
-@Auth ： Tian Pengtao
-@File ：currency.py
-"""
 # 通用函数
 import re
 import os

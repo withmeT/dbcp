@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-@Time ： 2023/4/28 16:29
-@Auth ： Tian Pengtao
-@File ：linux_function.py
-"""
 import paramiko
 from currency import write_file
 
@@ -24,9 +19,8 @@ class run_linux:
         self.file_name = "date/" + file_name + "+" + host + ".log"
 
     def run(self, cmd):
-        for i in cmd:
-            stdin, stdout, stderr = self.ssh.exec_command(i)
-            write_file(self.file_name, stdout.read().decode("utf-8"))
+        stdin, stdout, stderr = self.ssh.exec_command(cmd)
+        write_file(self.file_name, stdout.read().decode("utf-8"))
 
     def __call__(self, cmd, *args, **kwargs):
         return self.run(cmd)

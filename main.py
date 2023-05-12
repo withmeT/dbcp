@@ -1,5 +1,4 @@
 import argparse
-from all_function.cmd import *
 from all_function.threads import *
 import yaml
 
@@ -24,7 +23,8 @@ def cli():  # 设置参数
 if __name__ == '__main__':  # 主函数
     args = cli()
     if args.command == 'linux':  # linux模式
-        cmd = linux_cmd()
+        with open("cmd.yaml", "r", encoding="utf8")as f:
+            cmd = yaml.safe_load(f).get("linux_cmd")
         if args.comm:
             cmd = args.comm.split(";")
         if args.host:  # 判断主机模式

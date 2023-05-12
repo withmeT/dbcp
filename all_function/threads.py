@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-@Time ： 2023/5/1 23:14
-@Auth ： Tian Pengtao
-@File ：threads.py
-"""
 # linux线程池
 
 from concurrent.futures import ThreadPoolExecutor
