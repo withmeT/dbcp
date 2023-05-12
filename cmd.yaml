@@ -1,33 +1,6 @@
 linux_cmd: >
-  echo -n "IP地址:";ip addr | grep -w "inet" | awk -F " " '{print $2}' | awk -F "/" '{print $1}' |grep -vw "127.0.0.1"| tr "\n" " ";echo;
-  echo -n "版本信息:";cat /etc/redhat-release;echo;
-  echo -n "用户名唯一性(passwd文件)：";printf "\n%-20s%-7s%s\n" "用户名" "UID" "默认shell";awk -F ":" '{printf "%-20s%-7s%s\n",$1,$3,$7}' /etc/passwd;echo;
-  echo -n "空密码用户(shadow文件):";awk -F ":" '{if($2 == ""){print $1}}' /etc/shadow | tr "\n" " " ;echo;echo;
-  echo "创建用户时配置文件(login.defs文件):";grep -vE "#|^$" /etc/login.defs | awk -F " " '{if($1 == "PASS_MAX_DAYS"){printf "%s%s\n","密码有效期(天)(PASS_MAX_DAYS):",$2}else if($1 == "PASS_MIN_DAYS"){printf "%s%s\n","密码最短使用期(PASS_MIN_DAYS):",$2}else if($1 == "PASS_MIN_LEN"){printf "%s%s\n","密码最短长度(PASS_MIN_LEN):",$2}}';echo;
-  echo "各用户当前密码最短使用期限及密码有限期(shadow文件):";printf "%-20s%-25s%-20s\n" "用户名" "最短使用时间" "密码有效期";awk -F ":" '{if($2 != "!!" && $2 != "*" && $2 != ""){printf "%-20s%-20s%-20s\n",$1,$4,$5}}' /etc/shadow;echo;
-  echo "各存在密码用户上次修改密码时间:";for i in `awk -F ":" '{if($2 != "!!" && $2 != "*" && $2 != ""){print $1}}' /etc/shadow`;do echo -n $i"用户" ;chage -l $i|grep "最近";done;echo;
-  echo "system-auth文件中配置的密码复杂度:(优先级高于pwquality.conf)";grep -vE "#|^$" /etc/pam.d/system-auth | grep -E "pam _cracklib.so|pam_pwquality.so" | tr -s " " | tr ' ' '\n' | awk -F "=" '{if("retry" == $1){printf "%s%s\n","修改密码，可以重试的次数(retry):",$2}else if("difok" == $1){printf "%s%s\n","与旧密码不同的字符个数(difok):",$2}else if("minlen" == $1){printf "%s%s\n","新密码最小长度(minlen):",$2}else if("dcredit" == $1){printf "%s%s\n","数字参数配置(dcredit):",$2}else if("ucredit" == $1){printf "%s%s\n","大写字母参数配置(ucredit):",$2}else if("lcredit" == $1){printf "%s%s\n","小写字母参数配置(lcredit):",$2}else if("ocredit" == $1){printf "%s%s\n","特殊字符参数配置(ocredit):",$2}else if("minclass" == $1){printf "%s%s\n","新密码所需最小字符种类(minclass):",$2}else if("enforce_for_root" == $1){printf "%s\n","密码复杂度已包含root(enforce_for_root)"}}';echo;
-  echo "pwquality.conf文件中密码复杂度:";grep -vE "^#|^$" /etc/security/pwquality.conf|tr -s " " | awk -F " = " '{if("minclass" == $1){printf "%s%s\n","新密码所需最小字符种类:",$2}else if("difok" == $1){printf "%s%s\n","与旧密码不同的字符个数:",$2}else if("minlen" == $1){printf "%s%s\n","新密码最小长度:",$2}else if("dcredit" == $1){printf "%s%s\n","数字参数配置:",$2}else if("ucredit" == $1){printf "%s%s\n","大写字母参数配置:",$2}else if("lcredit" == $1){printf "%s%s\n","小写字母参数配置:",$2}else if("ocredit" == $1){printf "%s%s\n","特殊字符参数配置:",$2}}';echo;
-  echo "查看ssh请求连接超时断开策略(ssh_config文件):";grep "LoginGraceTime" /etc/ssh/sshd_config | grep -v "#" | awk '{print "连接超时退出时间为" $2}';echo;
-  echo "查看无操作连接超时退出策略(profile文件)：";grep "TMOUT" /etc/profile | awk -F "=" '{print "超时退出时间为(秒)(TMOUT):",$2}';echo;
-  echo "失败锁定策略(SSH)(sshd_config)：";grep -vE "#|^$" /etc/pam.d/sshd | head -n 3 | grep "pam.tally2.so" | tr -s " " | tr ' ' '\n' | awk -F "=" '{if("deny" == $1){printf "%s%s\n","失败次数(deny):",$2}else if("unlock_time" == $1){printf "%s%s\n","锁定时间(秒)(unlock_time):",$2}else if("even_deny_root" == $1){printf "%s\n","策略已包含root用户(even_deny_root)"}else if("root_unlock_time" == $1){printf "%s%s\n","root用户锁定时间(秒)(root_unlock_time):",$2}}';echo;
-  echo "失败锁定策略(本地)(system-auth)：";grep -vE "#|^$" /etc/pam.d/system-auth | head -n 3 | grep "pam.tally2.so" | tr -s " " | tr ' ' '\n' | awk -F "=" '{if("deny" == $1){printf "%s%s\n","失败次数(deny):",$2}else if("unlock_time" == $1){printf "%s%s\n","锁定时间(秒)(unlock_time):",$2}else if("even_deny_root" == $1){printf "%s\n","策略已包含root用户(even_deny_root)"}else if("root_unlock_time" == $1){printf "%s%s\n","root用户锁定时间(秒)(root_unlock_time):",$2}}';echo;
-  echo -n "SSH服务开启情况:(若出现"not be found"表示没有此服务)  ";systemctl status sshd.service | grep "Active" | awk '{if($2 == "active"){print "已开启sshd服务"}else if($2 == "inactive"){print "未开启sshd服务"}}';echo;
-  echo -n "TELNET服务开启情况:(若出现"not be found"表示没有此服务)  ";systemctl status telnet.socket | grep "Active" | awk '{if($2 == "active"){print "已开启TELNET服务"}else if($2 == "inactive"){print "未开启TELNET服务"}}';echo;
-  echo -n "RLOGIN服务开启情况:(若出现"not be found"表示没有此服务)  ";systemctl status rlogin.socket | grep "Active" | awk '{if($2 == "active"){print "已开启RLOGIN服务"}else if($2 == "inactive"){print "未开启RLOGIN服务"}}';echo;
-  echo "各账户sudo权限划分情况：";for i in `awk -F ":" '{if($2 != "!!" && $2 != "*" && $2 != ""){print $1}}' /etc/shadow`;do sudo -l -U $i|tail -n 2;done;echo;
-  echo "用户远程限制(sshd_config):";echo "是否允许root远程管理(若为空，表示已注释，默认允许):";grep -vE "^#|^$" /etc/ssh/sshd_config | grep -E "PermitRootLogin|AllowUsers|DenyUsers|AllowGroups|DenyGroups" | awk '{if($1 == "PermitRootLogin"){printf "%s  %s\n",$1,$2}else if($1 == "AllowUsers"){printf "%s","允许用户列表:";{for (i=2; i<=NF; i++) printf "%s%s",$i,"  "};print ""}else if($1 == "DenyUsers"){printf "%s","拒绝用户列表:";{for (i=2; i<=NF; i++) printf "%s%s",$i,"  "};print ""}else if($1 == "AllowGroups"){printf "%s","允许用户组列表:";{for (i=2; i<=NF; i++) printf "%s%s",$i,"  "};print ""}else if($1 == "DenyGroups"){printf "%s","拒绝用户组列表:";{for (i=2; i<=NF; i++) printf "%s%s",$i,"  "};print ""}}';echo;
-  echo "各账户umask设置情况：";for i in `awk -F ":" '{if($2 != "!!" && $2 != "*" && $2 != ""){print $1}}' /etc/shadow`;do echo -n $i":";su - $i -c "umask";done;echo;
-  echo "SeLinux情况:";sestatus | awk '{if("SELinux" == $1 && "status:" == $2){printf "%s%s\n","SeLinux开启情况:",$3}else if("Current" == $1 && "mode:" == $2){printf "%s%s\n","SeLinux运行模式:",$3}}';echo;
-  echo "日志进程情况:";ps -ef | grep -E "/sbin/auditd|rsyslogd" | grep -v "grep" | awk '{if($8 == "/sbin/auditd"){print "已开启audit日志服务"}else if($8 == "/usr/sbin/rsyslogd"){print "已开启rsyslog日志服务"}}';echo;
-  echo "audit日志规则";auditctl -l;
-  echo "audit日志详细内容(最新三行，最早三行):";tail -n 3 /var/log/audit/audit.log ;echo;head -n 3 /var/log/audit/audit.log;echo;
-  echo "messages日志详细内容(最新三行，最早三行):";tail -n 3 /var/log/messages ;echo;head -n 3 /var/log/messages;echo;
-  echo "secure日志详细内容(最新三行，最早三行):";tail -n 3 /var/log/secure;echo;head -n 3 /var/log/secure;echo;
-  echo "dmesg日志详细内容(最新三行，最早三行):";tail -n 3 /var/log/dmesg;echo;head -n 3 /var/log/dmesg;echo;
-  echo -n "syslog是否配置日志转发(仅端口为514):";grep -vE "^$|^#" /etc/rsyslog.conf | grep ":514";echo;
-  echo -n "已开启端口:";netstat -anptu |grep -vE "Local|servers"| awk '{print $4}' |awk -F ":" '{print $NF}' | sort | uniq | tr '\n' ' '; echo;echo "各本地协议端口对应服务状态:";netstat -anptu | awk '{printf "%-10s%-20s%-15s\n",$1,$4,$NF}';echo;
-  echo "hosts.allow及hosts.deny中配置的地址限制;";grep -vE "^$|^#" /etc/hosts.allow /etc/hosts.deny;echo;
+  date
+  who
 
 mysql_cmd:
   - aaaaaaaaaaaaaaaa
