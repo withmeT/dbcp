@@ -2,6 +2,8 @@
 import paramiko
 import datetime
 from currency import write_file
+import os
+
 
 class run_linux:
     def __init__(self, data_list):

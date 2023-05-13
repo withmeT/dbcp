@@ -41,7 +41,12 @@ def check_in_data(data):
     if not compile_ip.match(data[1]):
         print(data[0] + "---" + "IP格式不满足要求")
         return None
-    if (int(data[4]) <= 0) or (int(data[4]) > 65535):
-        print(data[0] + "---" + "端口号不符合要求，1~65535")
+    try:
+        port = int(data[4])
+        if (port <= 0) or (port > 65535):
+            print(data[0] + "---" + "端口号不符合要求，1~65535")
+            return None
+    except:
+        print(data[0] + "---" + "非正常端口")
         return None
     return True
