@@ -2,7 +2,6 @@
 import re
 import os
 
-
 # 读文件函数
 def read_file(file):
     data = []

@@ -3,7 +3,6 @@ import paramiko
 import datetime
 from currency import write_file
 
-
 class run_linux:
     def __init__(self, data_list):
         file_name, host, username, password, port = data_list.split("~")
