@@ -1,5 +1,4 @@
 import argparse
-import time
 
 from all_function.threads import *
 from all_function.linux_function import run_linux
