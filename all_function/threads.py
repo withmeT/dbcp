@@ -5,6 +5,7 @@ import time
 from all_function.linux_function import run
 from currency import *
 
+
 def linux_threads_pool(file_name, cmd):
     if file_exists(file_name):
         new_data_list = []
