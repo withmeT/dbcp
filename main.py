@@ -20,7 +20,10 @@ def cli():  # 设置参数
                             default=cli_yaml.get("linux-hosts"))
     subparser1.add_argument('--common', dest='comm', help='自定义命令采集(以分号进行分割)')
     subparser2 = subparsers.add_parser('mysql', help='mysql help')
-    subparser2.set_defaults()
+    subparser2.add_argument('--host', dest='host', help='单主机采集（以”设备名~IP地址~用户名~密码~端口“）')
+    subparser2.add_argument('--hosts', dest='hosts', help='多主机采集(default ./linux.txt)',
+                            default=cli_yaml.get("linux-hosts"))
+    subparser2.add_argument('--common', dest='comm', help='自定义命令采集(以分号进行分割)')
     return parser.parse_args()
 
 
@@ -29,6 +32,17 @@ if __name__ == '__main__':  # 主函数
     if args.command == 'linux':  # linux模式
         with open("cmd.yaml", "r", encoding="utf8")as f:
             cmd = yaml.safe_load(f).get("linux_cmd")
+        if args.comm:  # 判断是否自定义命令
+            cmd = args.comm
+        if args.host:  # 主机类型为单主机采集
+            if check_in_data(args.host):
+                run_linux(args.host).run(cmd=cmd)
+        elif args.hosts:  # 主机类型为多主机采集
+            linux_threads_pool(args.hosts, cmd=cmd)
+
+    if args.command == 'mysql':  # linux模式
+        with open("cmd.yaml", "r", encoding="utf8")as f:
+            cmd = yaml.safe_load(f).get("mysql_cmd")
         if args.comm:  # 判断是否自定义命令
             cmd = args.comm
         if args.host:  # 主机类型为单主机采集
